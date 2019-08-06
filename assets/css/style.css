@@ -306,8 +306,22 @@ padding:2px 10px;
 .sitesdiv, .stockdiv, .companydiv, .employeediv
 {
    margin-top:50px;
-    margin-left:100px;
+    margin-left:80px;
     padding:20px;
+    width:100%;
+    right: 0;
+    bottom: 0;
+    top: 51px;
+    overflow: auto;
+    background-color: #ebeef0;
+     font-family: 'Nunito', sans-serif;  
+    min-width: 800px;
+}
+.erecdiv
+{
+   margin-top:50px;
+    padding:20px;
+    margin-left:80px;
     width:100%;
     right: 0;
     bottom: 0;
@@ -368,7 +382,10 @@ padding:2px 10px;
     padding:0px 15px;
 }
 .botnav a:hover{
-    border-bottom:2px solid #00c97d;
+   color:#00c97d;
+}
+.botnav li.active{
+     border-bottom:2px solid #00c97d;
 }
 .comicon
 {
@@ -556,6 +573,21 @@ label {
     font-size:14px;
      letter-spacing: 0.2px;
   }
+th {
+   border-bottom: 0 solid;
+    cursor: pointer;
+    text-align: left
+    font-size: 15px;
+    max-width:min-content;
+    padding: 15px 10px 15px 17px;
+    white-space: nowrap;
+    color: #183247;
+     font-family: 'Nunito', sans-serif;
+    background-color: #F7F9FA;
+    border-radius: 3px 3px 0 0;
+    vertical-align: middle;
+}
+
   .first
 {
     border:none !important;
@@ -568,23 +600,19 @@ padding-top:30px;
     text-align:left;
     font-weight:600;
 }
-  #myTable th, #myTable td {
+#myTable tr
+{
+    background-color:#ffffff;
+}
+ #myTable td {
+     padding:10px;
     text-align: left;
-    padding: 10px;
     letter-spacing:0.4px;
     font-size:14px;
     font-weight:500;
  font-family: 'Nunito', sans-serif;
   }
-   th
-  {
-      background-color:#00A861;
-      color:#ffffff;
-   font-family: 'Nunito', sans-serif;
-      font-size:15px;
-      letter-spacing:0.5px;
-      padding:10px;
-  }
+  
 .hidetext { -webkit-text-security: none; }
 .hidetext { -webkit-text-security: circle; }
 .hidetext { -webkit-text-security: square; }
