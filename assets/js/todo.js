@@ -16,7 +16,7 @@ data = data || {};
 			deleteDiv: "delete-div"
 		},
 	  codes = {
-	  	"1" : "#pending",
+	  	"1" : "#created",
 	  	"2" : "#inProgress",
 	  	"3" : "#completed"
 	  };
