@@ -238,6 +238,19 @@ padding:2px 10px;
     background-color: white;
     border: 1px solid #00c97d; 
 }
+.paused {
+    border: 1px solid #FFDCA7;
+    background-color: #FFF9F0;
+    color: #FF9D00;
+}
+.status{
+    font-size: 11px;
+    border-radius: 2px;
+    padding: 1px 3px;
+    display: inline-block;
+    min-width: 58px;
+    text-align: center;
+}
 .tooltip-inner {
     min-width: max-content;
     width:100% !important;
@@ -302,7 +315,6 @@ padding:2px 10px;
 .main
 {
     margin-top:50px;
-    margin-left:100px;
     padding:20px;
     right: 0;
     bottom: 0;
@@ -528,7 +540,7 @@ label {
     margin-bottom: 15px;
     cursor: pointer;
 }
-.compcard
+.compcard, .taskcard
 {
    margin-top:10px;
     background-color: #fff;
@@ -546,7 +558,7 @@ label {
     text-decoration: none;
     color:#333333;
 }
-.newcard h4
+.newcard h4, .compcard h4
 {
  font-family: 'Nunito', sans-serif;   
  font-size:20px;
@@ -555,7 +567,7 @@ label {
     font-weight: 700;
     line-height: 25px;
 }
-.compcard h4
+.taskcard h4
 {
  font-family: 'Nunito', sans-serif;   
  font-size:22px;
