@@ -103,10 +103,19 @@ ul#pro li a:hover{
     margin-left:8%;
     margin-right:15%;
 }
+.container3
+{
+    margin-left:3%;
+    margin-right:5%;
+}
 .dropdown {
   position: relative;
   display: inline-block;
    
+}
+.leftmargin
+{
+    border-left:1px solid #c9c9c9 !important;
 }
 
 .dropdown-content {
@@ -527,12 +536,17 @@ label {
     padding: 20px 25px;
     text-align: center;
     position: relative;
-    border:1px solid #cfcfcf;
+    border:1px solid #eaeaea;
     box-shadow: 0 1px 2px 1px rgba(24,24,24,.02);
     margin-bottom: 15px;
     cursor: pointer;  
 }
-.newcard h4, .compcard h4
+.compcard a
+{
+    text-decoration: none;
+    color:#333333;
+}
+.newcard h4
 {
  font-family: 'Nunito', sans-serif;   
  font-size:20px;
@@ -541,7 +555,17 @@ label {
     font-weight: 700;
     line-height: 25px;
 }
-
+.compcard h4
+{
+ font-family: 'Nunito', sans-serif;   
+ font-size:22px;
+     letter-spacing: 0.2px;   
+    margin: 0;
+    margin-bottom:20px;
+    font-weight: 700;
+    line-height: 25px;
+    color:#00c97d;
+}
 .newcard p, .compcard p
 {
     font-size:13px;
@@ -591,6 +615,10 @@ th {
   .first
 {
     border:none !important;
+}
+.floatright
+{
+    float:right !important;
 }
 .drivetab td:first-child
 {
@@ -744,3 +772,51 @@ padding-top:30px;
 
 /* ----- v CAN BE DELETED v ----- */
 
+.task-list {
+width: 250px;
+float: left;
+margin: 0 5px;
+background-color: #e3e3e3;
+min-height: 240px;
+  font-family: 'Nunito', sans-serif;
+border-radius: 10px;
+padding-bottom: 15px;
+}
+.task-list input, .task-list textarea {
+width: 240px;
+margin: 1px 5px;
+}
+.task-list input {
+height: 30px;
+}
+.task-list input[type="button"] {
+width: 100px;
+margin: 5px;
+}
+.todo-task {
+background-color: #fff;
+ border:1px solid #eaeaea;
+ font-family: 'Nunito', sans-serif;
+    z-index:1;
+margin: 5px;
+padding: 10px;
+}
+.todo-task > .task-header {
+font-weight: 800;
+    font-size:20px;
+    text-align:center;
+}
+.todo-task > .task-date {
+font-size: small;
+}
+.todo-task > .task-description {
+    margin-top:10px;
+font-size: 14px;
+letter-spacing:0.2px;
+}
+#todo-form h3
+{
+    font-size:24px;
+   font-family: 'Nunito', sans-serif;
+    font-weight:600;
+}
