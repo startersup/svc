@@ -19,6 +19,10 @@ body
     border-top: none;
     height: 51px;
 }
+a {
+    color: transparent;
+    text-decoration: none;
+}
 .logo
 {
     padding: 9px 0;
@@ -45,8 +49,8 @@ body
 }
 .navbar-brand
 {
-font-size:22px;
-    font-weight:700;
+font-size:20px;
+font-weight:700;
 }
 .navbar-brand span
 {
@@ -357,6 +361,7 @@ padding:2px 10px;
     top: 51px;
     overflow: auto;
     background-color: #ebeef0;
+    color:#33475B;
      font-family: 'Nunito', sans-serif;  
     min-width: 800px;
 }
@@ -486,11 +491,13 @@ padding:2px 10px;
 {
   font-family: 'Nunito', sans-serif;  
     font-weight:700;
+    color:#33475B;
     font-size:26px;
 }
 .main p
 {
     font-size:16px;
+    color:#33475B;
     color: rgba(0,0,0,.54);
 }
 input[type=text], input[type=email], input[type=password], input[type=number]  {
@@ -860,3 +867,4 @@ letter-spacing:0.2px;
     font-weight:600;
     text-align:left;
 }
+
