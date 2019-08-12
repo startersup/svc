@@ -3,7 +3,6 @@ body
 {
         background-color: #ebeef0;
     overflow-x: hidden;
-    overflow-y: scroll;
 }
 .navbar-fixed-top
 {
@@ -25,8 +24,8 @@ a {
 }
 .logo
 {
-    padding: 9px 0;
-    border-bottom: 1px solid #333;
+    padding: 10px 0;
+    border-bottom: 1px solid #4e5359    ;
     cursor: pointer;
 }
 .preview
@@ -53,7 +52,7 @@ font-size:20px;
 font-weight:700;
 }
 .navbar-brand span
-{
+{ 
     color:#00c97d;
      font-weight:800;
 }
@@ -121,7 +120,10 @@ ul#pro li a:hover{
 {
     border-left:1px solid #c9c9c9 !important;
 }
-
+.pad
+{
+    margin:10px;
+}
 .dropdown-content {
      top: 48px;
     left: 0;
@@ -221,6 +223,45 @@ ul.nav li.dropdown:hover > ul.dropdown-menu {
   font-size: 17px;
     font-weight:700;
 }
+.featurebutton {
+  background-color:#fcfeff; 
+  border-radius:2px;
+   margin-top:5px;
+    border: 1px solid #e7e7e7;
+  color: black;
+  padding: 5px 10px 5px 5px;
+  text-align: center;
+font-family: 'Nunito', sans-serif;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 12.5px;
+    font-weight:600;
+}
+.exportbutton
+{
+    background-color:#fcfeff; 
+  border-radius:2px;
+   margin-top:0px;
+    margin-right:5px;
+    border: 1px solid #e7e7e7;
+  color: black;
+  padding: 8px 10px;
+  text-align: center;
+font-family: 'Nunito', sans-serif;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 12.5px;
+    font-weight:600;
+}
+.smallicon
+{
+    margin:2px 5px;
+    max-width:10px;
+}
+#features
+{
+  margin:8px 10px;  
+}
 .right
 {
     float:right;
@@ -242,7 +283,7 @@ padding:2px 10px;
     background-color: white;
     border: 1px solid #00c97d; 
 }
-.activestatus {
+.activestatus, .openedstatus {
     border: 1px solid #58c989;
     background-color: #f2fff8;
     color: #58c989;
@@ -253,7 +294,8 @@ padding:2px 10px;
     min-width: 58px;
     text-align: center;
 }
-.pausedstatus {
+
+.pausedstatus, .pendingstatus {
     border: 1px solid #FFDCA7;
     background-color: #FFF9F0;
     color: #FF9D00;
@@ -264,7 +306,7 @@ padding:2px 10px;
     min-width: 58px;
     text-align: center;
 }
-.endedstatus
+.endedstatus, .closedstatus
 {
   border: 1px solid #ffa8b2;  
   background-color: #fff2f6;
@@ -280,7 +322,7 @@ padding:2px 10px;
 .tooltip-inner {
     min-width: max-content;
     width:100% !important;
-    padding: 5px 5px;
+    padding:5px;
     color: #fff;
     margin-left:-8px;
     font-size:14px;
@@ -290,13 +332,13 @@ padding:2px 10px;
 }
 .tooltip.right .tooltip-arrow {
     top: 50%;
-    left: -10%;
+    left:-9%;
     margin-top: -5px;
     border-width: 5px 5px 5px 0;
     border-right-color: #000;
 }
 #sidebar {
-    background: #382e28 ;
+    background: #495057 ;
     z-index: 881;
     width: 65px;
     height: 100%;
@@ -320,7 +362,7 @@ padding:2px 10px;
 }
 .icons:hover
 {
-    background-color: #48413e;
+    background-color: #57595b;
     padding:5px 10px;
 }
 #sidebar .sidebar-menu li active, #sidebar .sidebar-menu li.active .icons {
@@ -379,6 +421,21 @@ padding:2px 10px;
      font-family: 'Nunito', sans-serif;  
     min-width: 800px;
 }
+.ticketdiv
+{
+ margin-top:0px;
+    margin-left:60px;
+    padding:5px 20px;
+    width:100%;
+    right: 0;
+    bottom: 0;
+    top: 51px;
+    overflow: auto;
+    background-color: #ebeef0;
+    color:#33475B;
+     font-family: 'Nunito', sans-serif;  
+    min-width: 800px;   
+}
 .site-card, .stock-card {
     background-color: #fff;
     border-radius: 0px;
@@ -399,10 +456,48 @@ padding:2px 10px;
     max-height:200px;
     width:100% !important;
 }
+.middle
+{
+    display:inline;
+    float:right !important;
+    position:fixed;
+    margin-top:20%;
+}
+.filters
+{
+    margin:0;
+    position:fixed;
+    padding:10px;
+    max-height:100vh;
+    height:100%;
+    background-color:#f9f9f9;
+     border-left: 1px solid #dadfe3;
+}
 .bottombar
 {
     margin-top:50px;
     margin-left:50px;
+    min-width: 1200px !important;
+    width:100%;
+    padding: 7px 0;
+    border-bottom: 1px solid #F9F9F9;
+    background-color: #f9f9f9;
+    height: 48px;
+    font-size: 14px;
+    cursor: default;
+    color: rgba(0,0,0,.87);
+    letter-spacing: 1px;
+}
+.navbar-right
+{
+    margin-right:40px !important;
+}
+.ticketbar
+{
+    margin-top:50px;
+    margin-left:50px;
+    min-width: 1200px !important;
+    width:100%;
     padding: 7px 0;
     border-bottom: 1px solid #F9F9F9;
     background-color: #f9f9f9;
@@ -457,7 +552,7 @@ padding:2px 10px;
     font-family: 'Nunito', sans-serif;
     letter-spacing: 0.5px;
 }
-.site-card p, .stock-card p{
+.site-card p, .stock-card p, .filters h4{
     font-weight:500;
     text-align: center;
     font-size:16px;
@@ -487,6 +582,10 @@ padding:2px 10px;
     padding-top: 29%;
     padding-left: 43%;
 }
+.nopadding {
+   padding: 2px !important;
+   margin: 2px !important;
+}
 .main h3
 {
   font-family: 'Nunito', sans-serif;  
@@ -511,6 +610,14 @@ input[type=text], input[type=email], input[type=password], input[type=number]  {
     background-color: #ffffff;
     font-family: 'Nunito', sans-serif;
 }
+input[type=checkbox]
+{
+   border: 1px solid #DBDFE3;
+    box-sizing: border-box;
+    padding:5px;
+    background-color: #ffffff !important;
+    font-family: 'Nunito', sans-serif; 
+}
 .controls {
     margin-top: 10px;
     border: 1px solid transparent;
@@ -531,6 +638,16 @@ input[type=text], input[type=email], input[type=password], input[type=number]  {
     box-sizing: border-box;
     background-color: #ffffff;
 }
+.filterselect {
+    width: 100%;
+    min-height: 10px;
+    padding: 5px 10px;
+    margin: 8px 0;
+    font-family: 'Nunito', sans-serif;
+    border: 1px solid #DBDFE3;
+    box-sizing: border-box;
+    background-color: #ffffff;
+}
 .textarea {
     width: 80%;
     padding: 12px 20px;
@@ -542,9 +659,25 @@ input[type=text], input[type=email], input[type=password], input[type=number]  {
     box-sizing: border-box;
     background-color: #ffffff;
 }
+.ticketinput
+{
+ width: 100%;
+    min-width:200px;
+    min-height: 20px !important;
+    padding: 8px 20px !important;
+    margin: 8px 0;
+   font-family: 'Nunito', sans-serif;
+ border: 1px solid transparent !important;
+    box-sizing: border-box;
+    background-color: #ffffff;   
+}
 .full
 {
     width:80%;
+}
+.extrafull
+{
+    width:100%;
 }
 label {
     display: inline-block;
@@ -553,6 +686,10 @@ label {
     font-size:13px;
     margin-bottom: 0;
     font-weight: 700;
+}
+.lesstop
+{
+    margin-top:-7.5px;
 }
 .top
 {
@@ -625,6 +762,8 @@ label {
 {
     position:fixed;
 }
+
+</style>
 <!--datatables-->
 .table
 {
@@ -639,18 +778,17 @@ label {
      letter-spacing: 0.2px;
   }
 th {
-   border-bottom: 0 solid;
     cursor: pointer;
-    text-align: left
-    font-size: 15px;
+    text-align: left;
+    font-size: 14px;
+    line-height:22px;
+    letter-spacing: 0.5px;
     max-width:min-content;
-    padding: 15px 10px 15px 17px;
+    padding:10px;
     white-space: nowrap;
     color: #183247;
      font-family: 'Nunito', sans-serif;
     background-color: #F7F9FA;
-    border-radius: 3px 3px 0 0;
-    vertical-align: middle;
 }
 
   .first
@@ -676,8 +814,10 @@ padding-top:30px;
  #myTable td {
      padding:10px;
     text-align: left;
-    letter-spacing:0.4px;
-    font-size:14px;
+    letter-spacing:0.5px;
+     color:#6d6d6d;
+     line-height:22px;
+    font-size:13px;
     font-weight:500;
  font-family: 'Nunito', sans-serif;
   }
@@ -686,7 +826,7 @@ padding-top:30px;
 .hidetext { -webkit-text-security: circle; }
 .hidetext { -webkit-text-security: square; }
   #myTable tr {
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid #f2f2f2;
   }
  
   <!--tab-panel-->
