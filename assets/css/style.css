@@ -340,11 +340,21 @@ padding:2px 10px;
 #sidebar {
     background: #495057 ;
     z-index: 881;
-    width: 65px;
-    height: 100%;
+    width: 64px;
+    height: 100vh!important;
     position: fixed;
     top: 0;
     left: 0;
+}
+.main-wrapper {
+    position: absolute;
+    left: 66px;
+    right: 0;
+    bottom: 0;
+    top: 51px;
+    overflow: auto;
+    background-color: #ebeef0;
+    min-width: 800px;
 }
 .sidebar-menu ul li
 {
@@ -768,6 +778,7 @@ label {
 table {
     background-color: transparent;
     width: 100%;
+    max-width: 100%;
 }
 table {
     border-collapse: collapse;
