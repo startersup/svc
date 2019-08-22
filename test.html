@@ -1,297 +1,342 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
-  <meta charset="UTF-8">
-  <title>Draggable Link</title>
-  <meta name="description" content="Drag a link to reconnect it. Nodes have custom Adornments for selection, resizing, and rotating.  The Palette includes links." />
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- Copyright 1998-2019 by Northwoods Software Corporation. -->
 
-  <script src="../release/go.js"></script>
-  <script src="../extensions/Figures.js"></script>
-  <script src="../assets/js/goSamples.js"></script>  <!-- this is only for the GoJS Samples framework -->
-  <script id="code">
-    function init() {
-      if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
-      var $ = go.GraphObject.make;  // for conciseness in defining templates
-      myDiagram =
-        $(go.Diagram, "myDiagramDiv",  // must name or refer to the DIV HTML element
-          {
-            grid: $(go.Panel, "Grid",
-              $(go.Shape, "LineH", { stroke: "lightgray", strokeWidth: 0.5 }),
-              $(go.Shape, "LineH", { stroke: "gray", strokeWidth: 0.5, interval: 10 }),
-              $(go.Shape, "LineV", { stroke: "lightgray", strokeWidth: 0.5 }),
-              $(go.Shape, "LineV", { stroke: "gray", strokeWidth: 0.5, interval: 10 })
-            ),
-            "draggingTool.dragsLink": true,
-            "draggingTool.isGridSnapEnabled": true,
-            "linkingTool.isUnconnectedLinkValid": true,
-            "linkingTool.portGravity": 20,
-            "relinkingTool.isUnconnectedLinkValid": true,
-            "relinkingTool.portGravity": 20,
-            "relinkingTool.fromHandleArchetype":
-              $(go.Shape, "Diamond", { segmentIndex: 0, cursor: "pointer", desiredSize: new go.Size(8, 8), fill: "tomato", stroke: "darkred" }),
-            "relinkingTool.toHandleArchetype":
-              $(go.Shape, "Diamond", { segmentIndex: -1, cursor: "pointer", desiredSize: new go.Size(8, 8), fill: "darkred", stroke: "tomato" }),
-            "linkReshapingTool.handleArchetype":
-              $(go.Shape, "Diamond", { desiredSize: new go.Size(7, 7), fill: "lightblue", stroke: "deepskyblue" }),
-            "rotatingTool.handleAngle": 270,
-            "rotatingTool.handleDistance": 30,
-            "rotatingTool.snapAngleMultiple": 15,
-            "rotatingTool.snapAngleEpsilon": 15,
-            "undoManager.isEnabled": true
-          });
-      // when the document is modified, add a "*" to the title and enable the "Save" button
-      myDiagram.addDiagramListener("Modified", function(e) {
-        var button = document.getElementById("SaveButton");
-        if (button) button.disabled = !myDiagram.isModified;
-        var idx = document.title.indexOf("*");
-        if (myDiagram.isModified) {
-          if (idx < 0) document.title += "*";
-        } else {
-          if (idx >= 0) document.title = document.title.substr(0, idx);
-        }
-      });
-      // Define a function for creating a "port" that is normally transparent.
-      // The "name" is used as the GraphObject.portId, the "spot" is used to control how links connect
-      // and where the port is positioned on the node, and the boolean "output" and "input" arguments
-      // control whether the user can draw links from or to the port.
-      function makePort(name, spot, output, input) {
-        // the port is basically just a small transparent square
-        return $(go.Shape, "Circle",
-          {
-            fill: null,  // not seen, by default; set to a translucent gray by showSmallPorts, defined below
-            stroke: null,
-            desiredSize: new go.Size(7, 7),
-            alignment: spot,  // align the port on the main Shape
-            alignmentFocus: spot,  // just inside the Shape
-            portId: name,  // declare this object to be a "port"
-            fromSpot: spot, toSpot: spot,  // declare where links may connect at this port
-            fromLinkable: output, toLinkable: input,  // declare whether the user may draw links to/from here
-            cursor: "pointer"  // show a different cursor to indicate potential link point
-          });
-      }
-      var nodeSelectionAdornmentTemplate =
-        $(go.Adornment, "Auto",
-          $(go.Shape, { fill: null, stroke: "deepskyblue", strokeWidth: 1.5, strokeDashArray: [4, 2] }),
-          $(go.Placeholder)
-        );
-      var nodeResizeAdornmentTemplate =
-        $(go.Adornment, "Spot",
-          { locationSpot: go.Spot.Right },
-          $(go.Placeholder),
-          $(go.Shape, { alignment: go.Spot.TopLeft, cursor: "nw-resize", desiredSize: new go.Size(6, 6), fill: "lightblue", stroke: "deepskyblue" }),
-          $(go.Shape, { alignment: go.Spot.Top, cursor: "n-resize", desiredSize: new go.Size(6, 6), fill: "lightblue", stroke: "deepskyblue" }),
-          $(go.Shape, { alignment: go.Spot.TopRight, cursor: "ne-resize", desiredSize: new go.Size(6, 6), fill: "lightblue", stroke: "deepskyblue" }),
-          $(go.Shape, { alignment: go.Spot.Left, cursor: "w-resize", desiredSize: new go.Size(6, 6), fill: "lightblue", stroke: "deepskyblue" }),
-          $(go.Shape, { alignment: go.Spot.Right, cursor: "e-resize", desiredSize: new go.Size(6, 6), fill: "lightblue", stroke: "deepskyblue" }),
-          $(go.Shape, { alignment: go.Spot.BottomLeft, cursor: "se-resize", desiredSize: new go.Size(6, 6), fill: "lightblue", stroke: "deepskyblue" }),
-          $(go.Shape, { alignment: go.Spot.Bottom, cursor: "s-resize", desiredSize: new go.Size(6, 6), fill: "lightblue", stroke: "deepskyblue" }),
-          $(go.Shape, { alignment: go.Spot.BottomRight, cursor: "sw-resize", desiredSize: new go.Size(6, 6), fill: "lightblue", stroke: "deepskyblue" })
-        );
-      var nodeRotateAdornmentTemplate =
-        $(go.Adornment,
-          { locationSpot: go.Spot.Center, locationObjectName: "CIRCLE" },
-          $(go.Shape, "Circle", { name: "CIRCLE", cursor: "pointer", desiredSize: new go.Size(7, 7), fill: "lightblue", stroke: "deepskyblue" }),
-          $(go.Shape, { geometryString: "M3.5 7 L3.5 30", isGeometryPositioned: true, stroke: "deepskyblue", strokeWidth: 1.5, strokeDashArray: [4, 2] })
-        );
-      myDiagram.nodeTemplate =
-        $(go.Node, "Spot",
-          { locationSpot: go.Spot.Center },
-          new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
-          { selectable: true, selectionAdornmentTemplate: nodeSelectionAdornmentTemplate },
-          { resizable: true, resizeObjectName: "PANEL", resizeAdornmentTemplate: nodeResizeAdornmentTemplate },
-          { rotatable: true, rotateAdornmentTemplate: nodeRotateAdornmentTemplate },
-          new go.Binding("angle").makeTwoWay(),
-          // the main object is a Panel that surrounds a TextBlock with a Shape
-          $(go.Panel, "Auto",
-            { name: "PANEL" },
-            new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify),
-            $(go.Shape, "Rectangle",  // default figure
-              {
-                portId: "", // the default port: if no spot on link data, use closest side
-                fromLinkable: true, toLinkable: true, cursor: "pointer",
-                fill: "white",  // default color
-                strokeWidth: 2
-              },
-              new go.Binding("figure"),
-              new go.Binding("fill")),
-            $(go.TextBlock,
-              {
-                font: "bold 11pt Helvetica, Arial, sans-serif",
-                margin: 8,
-                maxSize: new go.Size(160, NaN),
-                wrap: go.TextBlock.WrapFit,
-                editable: true
-              },
-              new go.Binding("text").makeTwoWay())
-          ),
-          // four small named ports, one on each side:
-          makePort("T", go.Spot.Top, false, true),
-          makePort("L", go.Spot.Left, true, true),
-          makePort("R", go.Spot.Right, true, true),
-          makePort("B", go.Spot.Bottom, true, false),
-          { // handle mouse enter/leave events to show/hide the ports
-            mouseEnter: function(e, node) { showSmallPorts(node, true); },
-            mouseLeave: function(e, node) { showSmallPorts(node, false); }
-          }
-        );
-      function showSmallPorts(node, show) {
-        node.ports.each(function(port) {
-          if (port.portId !== "") {  // don't change the default port, which is the big shape
-            port.fill = show ? "rgba(0,0,0,.3)" : null;
-          }
-        });
-      }
-      var linkSelectionAdornmentTemplate =
-        $(go.Adornment, "Link",
-          $(go.Shape,
-            // isPanelMain declares that this Shape shares the Link.geometry
-            { isPanelMain: true, fill: null, stroke: "deepskyblue", strokeWidth: 0 })  // use selection object's strokeWidth
-        );
-      myDiagram.linkTemplate =
-        $(go.Link,  // the whole link panel
-          { selectable: true, selectionAdornmentTemplate: linkSelectionAdornmentTemplate },
-          { relinkableFrom: true, relinkableTo: true, reshapable: true },
-          {
-            routing: go.Link.AvoidsNodes,
-            curve: go.Link.JumpOver,
-            corner: 5,
-            toShortLength: 4
-          },
-          new go.Binding("points").makeTwoWay(),
-          $(go.Shape,  // the link path shape
-            { isPanelMain: true, strokeWidth: 2 }),
-          $(go.Shape,  // the arrowhead
-            { toArrow: "Standard", stroke: null }),
-          $(go.Panel, "Auto",
-            new go.Binding("visible", "isSelected").ofObject(),
-            $(go.Shape, "RoundedRectangle",  // the link shape
-              { fill: "#F8F8F8", stroke: null }),
-            $(go.TextBlock,
-              {
-                textAlign: "center",
-                font: "10pt helvetica, arial, sans-serif",
-                stroke: "#919191",
-                margin: 2,
-                minSize: new go.Size(10, NaN),
-                editable: true
-              },
-              new go.Binding("text").makeTwoWay())
-          )
-        );
-      load();  // load an initial diagram from some JSON text
-      // initialize the Palette that is on the left side of the page
-      myPalette =
-        $(go.Palette, "myPaletteDiv",  // must name or refer to the DIV HTML element
-          {
-            maxSelectionCount: 1,
-            nodeTemplateMap: myDiagram.nodeTemplateMap,  // share the templates used by myDiagram
-            linkTemplate: // simplify the link template, just in this Palette
-              $(go.Link,
-                { // because the GridLayout.alignment is Location and the nodes have locationSpot == Spot.Center,
-                  // to line up the Link in the same manner we have to pretend the Link has the same location spot
-                  locationSpot: go.Spot.Center,
-                  selectionAdornmentTemplate:
-                    $(go.Adornment, "Link",
-                      { locationSpot: go.Spot.Center },
-                      $(go.Shape,
-                        { isPanelMain: true, fill: null, stroke: "deepskyblue", strokeWidth: 0 }),
-                      $(go.Shape,  // the arrowhead
-                        { toArrow: "Standard", stroke: null })
-                    )
-                },
-                {
-                  routing: go.Link.AvoidsNodes,
-                  curve: go.Link.JumpOver,
-                  corner: 5,
-                  toShortLength: 4
-                },
-                new go.Binding("points"),
-                $(go.Shape,  // the link path shape
-                  { isPanelMain: true, strokeWidth: 2 }),
-                $(go.Shape,  // the arrowhead
-                  { toArrow: "Standard", stroke: null })
-              ),
-            model: new go.GraphLinksModel([  // specify the contents of the Palette
-              { text: "Start", figure: "Circle", fill: "#00AD5F" },
-              { text: "Step" },
-              { text: "DB", figure: "Database", fill: "lightgray" },
-              { text: "???", figure: "Diamond", fill: "lightskyblue" },
-              { text: "End", figure: "Circle", fill: "#CE0620" },
-              { text: "Comment", figure: "RoundedRectangle", fill: "lightyellow" }
-            ], [
-                // the Palette also has a disconnected Link, which the user can drag-and-drop
-                { points: new go.List(/*go.Point*/).addAll([new go.Point(0, 0), new go.Point(30, 0), new go.Point(30, 40), new go.Point(60, 40)]) }
-              ])
-          });
-    }
-    // Show the diagram's model in JSON format that the user may edit
-    function save() {
-      saveDiagramProperties();  // do this first, before writing to JSON
-      document.getElementById("mySavedModel").value = myDiagram.model.toJson();
-      myDiagram.isModified = false;
-    }
-    function load() {
-      myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value);
-      loadDiagramProperties();  // do this after the Model.modelData has been brought into memory
-    }
-    function saveDiagramProperties() {
-      myDiagram.model.modelData.position = go.Point.stringify(myDiagram.position);
-    }
-    function loadDiagramProperties(e) {
-      // set Diagram.initialPosition, not Diagram.position, to handle initialization side-effects
-      var pos = myDiagram.model.modelData.position;
-      if (pos) myDiagram.initialPosition = go.Point.parse(pos);
-    }
-  </script>
+<head>
+    <meta charset="UTF-8">
+    <title>Workativ | Cognitive Automation Solutions</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta name="description" content="AI-based automation solution. Workativ helps companies reduce cost and increase productivity by providing cognitive and automation solutions.">
+    <meta name="keywords" content="Cognitive IT operations, Cognitive Service, IBM Watson, Workflow, RPA Operations, Cognitive RPA, Automation, IT Support Automation, Help Desk Automation, Service Desk Automation, Service Management Automation, ITSM RPA, Cognitive Support, Next Gen Workplace, Cognitive Workplace Support">
+    <meta name="author" content="">
+    <meta property="og:title" content="">
+    <meta property="og:image" content="">
+    <meta property="og:url" content="">
+    <meta property="og:site_name" content="">
+    <meta property="og:description" content="">
+    <meta name="twitter:title" content="">
+    <meta name="twitter:image" content="">
+    <meta name="twitter:url" content="">
+    <meta name="twitter:card" content="">
+    <link rel="shortcut icon" href="/workativ-fevicon.56472797.ico">
+    <link href="/workativ-stylesheet.08c606fe.css" rel="stylesheet">
+    <link href="/responsive.831d12d4.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lykmapipo/themify-icons@0.1.2/css/themify-icons.css">
+    <link href="/font-awesome.05bba579.css" rel="stylesheet">
+    <link rel="stylesheet" href="/bootstrap.min.57d53876.css">
 </head>
-<body onload="init()">
-<div id="sample">
-  <div style="width: 100%; display: flex; justify-content: space-between">
-    <div id="myPaletteDiv" style="width: 105px; margin-right: 2px; background-color: whitesmoke; border: solid 1px black"></div>
-    <div id="myDiagramDiv" style="flex-grow: 1; height: 620px; border: solid 1px black"></div>
-  </div>
-  <p>
-    This sample demonstrates the ability for the user to drag around a Link as if it were a Node.
-    When either end of the link passes over a valid port, the port is highlighted.
-  </p>
-  <p>
-    The link-dragging functionality is enabled by setting some or all of the following properties:
-    <a>DraggingTool.dragsLink</a>, <a>LinkingTool.isUnconnectedLinkValid</a>, and
-    <a>RelinkingTool.isUnconnectedLinkValid</a>.
-  </p>
-  <p>
-    Note that a Link is present in the <a>Palette</a> so that it too can be dragged out and onto
-    the main Diagram.  Because links are not automatically routed when either end is not connected
-    with a Node, the route is provided explicitly when that Palette item is defined.
-  </p>
-  <p>
-    This also demonstrates several custom Adornments:
-    <a>Part.selectionAdornmentTemplate</a>, <a>Part.resizeAdornmentTemplate</a>, and
-    <a>Part.rotateAdornmentTemplate</a>.
-  </p>
-  <p>
-    Finally this sample demonstrates saving and restoring the <a>Diagram.position</a> as a property
-    on the <a>Model.modelData</a> object that is automatically saved and restored when calling <a>Model.toJson</a>
-    and <a>Model,fromJson</a>.
-  </p>
-  <div>
-    <div>
-      <button id="SaveButton" onclick="save()">Save</button>
-      <button onclick="load()">Load</button>
-      Diagram Model saved in JSON format:
-    </div>
-    <textarea id="mySavedModel" style="width:100%;height:300px">
-{ "class": "go.GraphLinksModel",
-  "linkFromPortIdProperty": "fromPort",
-  "linkToPortIdProperty": "toPort",
-  "nodeDataArray": [
- ],
-  "linkDataArray": [
- ]}
-    </textarea>
-  </div>
-</div>
+
+<body>
+    <noscript>
+        <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WT63D8T" height="0" width="0" style="display:none;visibility:hidden"></iframe>
+    </noscript>
+    <section class="header">
+        <div class="container">
+            <div class="row">
+                <nav class="navbar navbar-expand-lg navbar-light header-logo mobile-logo">
+                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 animatable fadeInLeft">
+                        <a href="/">
+                            <img src="/workativ-logo.6b6c8905.png" alt="Workativ Logo">
+                        </a>
+                    </div>
+                    <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12 animatable fadeInRight">
+                        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                            <ul class="navbar-nav ml-auto">
+                                <li class="nav-item"> <a class="nav-link" href="/assistant">Product</a> 
+                                </li>
+                                <li class="nav-item"> <a class="nav-link" href="/careers">Careers</a> 
+                                </li>
+                                <li class="nav-item"> <a class="nav-link" href="/contact-us">Contact Us</a> 
+                                </li>
+                                <li class="nav-item free_trial"> <a class="nav-link trial-white" href="/assistant/beta_registration">Try Beta</a> 
+                                </li>
+                            </ul>
+                        </div>
+                    </div> <a id="offCanvas" class="hamburger"><i class="ti-menu"></i></a> 
+                    <div class="nav-offcanvas">
+                        <div class="menu_border_bottom">
+                            <a href="/">
+                                <img src="/workativ-logo.6b6c8905.png" alt="Workativ Logo">
+                            </a>
+                            <button type="button" class="close" id="offCanvasClose" aria-label="Close"> <i class="ti-close"></i> 
+                            </button>
+                        </div>
+                        <div class="nav-offcanvas-menu">
+                            <ul>
+                                <li><a href="/assistant">Product</a>
+                                </li>
+                                <li><a href="/careers">Careers</a>
+                                </li>
+                                <li><a href="/contact-us">Contact Us</a>
+                                </li>
+                                <li><a class="free_trial" href="/assistant/beta_registration">Register for beta</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </section>
+    <section class="main-slider animatable fadeInUp">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-7 col-md-12 col-sm-12 col-xs-12 animatable fadeInLeft">
+                    <div class="main-slider-left">
+                        <h1>Intelligent automation for IT Helpdesk</h1> 
+                        <p>Introducing <a href="/assistant">Workativ Assistant</a> - An intelligent automation based platform to build and deploy purpose built Virtual Assistant for workplace IT support.</p>
+                        <div class="main-slider-button">
+                            <ul>
+                                <li class="nav-item free-trial"> <a class="nav-link" href="/assistant/beta_registration">Register for beta</a> 
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-5 col-md-12 col-sm-12 col-xs-12 animatable fadeInRight">
+                    <div class="main-slider-right">
+                        <img src="/workativ_hero_img.fb8be264.png" alt="IT Help Desk">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="dialog-editor animatable fadeInUp">
+        <div class="container">
+            <div class="analysts-perspective-content animatable fadeInLeft">
+                <h5>Analysts perspective</h5> 
+            </div>
+            <div id="carouselExampleIndicators" class="carousel slide carousel-fade" data-ride="carousel" data-interval="3000">
+                <div class="carousel-inner">
+                    <div class="carousel-item active">
+                        <img class="d-block w-100 animatable fadeInLeft" src="/pwc-logo.a1d47c22.png" alt="">
+                        <div class="dialog-editor-content animatable fadeInRight">
+                            <p>“In 10 years, if you’re not using some sort of AI-enhanced assistant, it will be like not being on the Internet today.”</p>
+                        </div>
+                    </div>
+                    <div class="carousel-item">
+                        <img class="d-block w-100 animatable fadeInLeft" src="/gartner-logo.a5d19d03.png" alt="">
+                        <div class="dialog-editor-content animatable fadeInRight">
+                            <p>“We expect AI, machine learning and VPAs to be one of the major strategic battlegrounds from 2017 onwards, and make many mobile apps fade and become sub-servants of VPAs.”</p>
+                        </div>
+                    </div>
+                    <div class="carousel-item">
+                        <img class="d-block w-100 animatable fadeInLeft" src="/idc-logo.dca01322.png" alt="">
+                        <div class="dialog-editor-content animatable fadeInRight">
+                            <p>“Conversational interfaces are being increasingly used by many types of organizations as an addition or replacement for more traditional methods of customer support including IVR and call centers.”</p>
+                        </div>
+                    </div>
+                </div>
+                <a class="carousel-control-prev animatable fadeInLeft" href="#carouselExampleIndicators" role="button" data-slide="prev"> <span class="carousel-control-prev-icon" aria-hidden="true"></span>  <span class="sr-only">Previous</span> 
+                </a>
+                <a class="carousel-control-next animatable fadeInRight" href="#carouselExampleIndicators" role="button" data-slide="next"> <span class="carousel-control-next-icon" aria-hidden="true"></span>  <span class="sr-only">Next</span> 
+                </a>
+                <ol class="carousel-indicators animatable fadeInUp">
+                    <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
+                    <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
+                    <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
+                </ol>
+            </div>
+        </div>
+    </section>
+    <section class="blogs-future-communication">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 blogs-future-communication-content">
+                    <h6 class="animatable fadeInRight">Our Blogs</h6> 
+                    <h1 class="animatable fadeInRight">The future communication starts from here</h1> 
+                </div>
+                <div class="col-lg-5 col-md-12 col-sm-12 col-xs-12">
+                    <div class="blogs-future-communication-blue">
+                        <h3><a class="nav-link animatable fadeInLeft" href="blog/articles/workplace-support-perish-or-survive">Will your workplace support perish or survive (better yet thrive)?</a></h3> 
+                        <a class="nav-link animatable fadeInLeft" href="blog/articles/workplace-support-perish-or-survive">
+                            <img src="/workplace-support-perish.9cfc0c44.png" alt="Read More">
+                        </a>
+                        <p class="animatable fadeInRight">Today, users are very savvy. With a tap of a button, people can rent, buy, lease, sell, talk, chat and basically can do everything one needs in day to day aspect of life. From a business perspective, companies are finding new ways
+                            to engage users to do business. The new startups have advantage in that they start...</p>
+                        <div class="read-more-button animatable fadeInLeft">
+                            <ul>
+                                <li class="nav-item read-more-content"> <a class="nav-link" href="blog/articles/workplace-support-perish-or-survive">Read More &nbsp;›</a> 
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-7 col-md-12 col-sm-12 col-xs-12">
+                    <div class="why-assistant-left">
+                        <div class="row">
+                            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 blogs-future-lavender-left animatable fadeInRight">
+                                <h3><a href="/blog/articles/Why-assistant">Why Workativ Assistant</a></h3> 
+                                <div class="read-more-button">
+                                    <ul>
+                                        <li class="nav-item read-more-content"> <a class="nav-link" href="/blog/articles/Why-assistant">Read More &nbsp;›</a> 
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 blogs-future-lavender-right animatable fadeInRight">
+                                <a href="/blog/articles/Why-assistant">
+                                    <img src="/why_assistant.9bcd6e48.png" alt="Why Workativ Assistant">
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="what-is-assistant-left">
+                        <div class="row">
+                            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 blogs-future-pink-left animatable fadeInRight">
+                                <h3><a href="/blog/articles/What-is-assistant">What is Workativ Assistant</a></h3> 
+                                <div class="read-more-button">
+                                    <ul>
+                                        <li class="nav-item read-more-content"> <a class="nav-link" href="/blog/articles/What-is-assistant">Read More &nbsp;›</a> 
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 blogs-future-pink-right">
+                                <a href="/blog/articles/What-is-assistant">
+                                    <img src="/skills-future.da3aac30.png" alt="What is Workativ Assistant">
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="hdi-ai-project-right">
+                        <div class="row">
+                            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 blogs-future-cyan-left animatable fadeInRight">
+                                <h3><a href="/blog/articles/Hdi-2019-Blog">Our Experiences at the HDI Conference & Expo, 2019 </a></h3> 
+                                <div class="read-more-button">
+                                    <ul>
+                                        <li class="nav-item read-more-content"> <a class="nav-link" href="/blog/articles/Hdi-2019-Blog">Read More &nbsp;›</a> 
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 blogs-future-cyan-right animatable fadeInRight">
+                                <a href="/blog/articles/Hdi-2019-Blog">
+                                    <img src="/hdi_blog_2019.09433b3e.jpg" alt="Hdi-2019-Blog">
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="know-how-assistant animatable fadeInUp">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-md-12 col-sm-12 col-xs-12 know-how-assistant-content animatable fadeInLeft">
+                    <h3>Ready to get started?</h3> 
+                    <p>Lower your IT Helpdesk cost by automating repetitive tasks and process with cognitive automation.</p>
+                    <div class="start-free-trail"> <a href="/assistant/beta_registration">Register for beta</a> 
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-12 col-sm-12 col-xs-12 know-how-assistant-image animatable fadeInRight">
+                    <img src="/workativ-get-started.0be093f1.png" alt="Register for beta">
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer animatable fadeInUp">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12 footer-content animatable fadeInLeft">
+                    <a href="/">
+                        <img src="/footer-workativ.12d92537.png" alt="Workativ Logo">
+                    </a>
+                    <div class="widget-content">
+                        <ul>
+                            <li><a href="/assistant">Workativ Assistant</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12 footer-content animatable fadeInLeft">
+                    <h3>Company</h3> 
+                    <div class="widget-content">
+                        <ul>
+                            <li><a href="/careers">Careers</a>
+                            </li>
+                            <li><a href="/contact-us">Contact</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12 footer-content animatable fadeInRight">
+                    <h3>Resources</h3> 
+                    <div class="widget-content">
+                        <ul>
+                            <li><a href="/blog/articles">BLog</a>
+                            </li>
+                            <li><a href="/Workativ_Assistant_Brochure.pdf" target="_blank">Brochure</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-6 col-xs-12 footer-content animatable fadeInRight">
+                    <h3>Connect with us</h3> 
+                    <div class="widget-content">
+                        <div class="social">
+                            <a target="_blank" class="img-circle fa fa-twitter" href="https://twitter.com/workativ"></a>
+                            <a target="_blank" class="img-circle fa fa-facebook-f" href="https://www.facebook.com/workativ/"></a>
+                            <a target="_blank" class="img-circle fa fa-linkedin" href="https://www.linkedin.com/company/workativ-com"></a>
+                            <a target="_blank" class="img-circle fa fa-youtube" href="https://www.youtube.com/channel/UCdyzcWlvsbCf7sncf6fYMIw"></a>
+                        </div>
+                        <ul>
+                            <li><a href="/privacy">Privacy Policy</a>
+                            </li>
+                            <li><a href="/terms">Terms of Use</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom text-center animatable fadeInDown">
+            <div class="container footer-border">
+                <div class="row-fluid">
+                    <div class="text-footer">Workativ &copy; Copyright 2019</div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <script type="application/javascript" src="/jquery-3.3.1.slim.min.82c9fda6.js"></script>
+    <script type="application/javascript" src="/popper.min.72fed07b.js"></script>
+    <script type="application/javascript" src="/bootstrap.min.82b19671.js"></script>
+    <script type="application/javascript" src="/custom.f84e1103.js"></script>
+    <script type="application/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+    <script>
+        ! function(o, n, a, e, t) {
+            o[e] = o[e] || [], o[e].push({
+                "gtm.start": (new Date).getTime(),
+                event: "gtm.js"
+            });
+            var l = n.getElementsByTagName(a)[0],
+                i = n.createElement(a);
+            i.async = !0, i.src = "https://www.googletagmanager.com/gtm.js?id=GTM-WT63D8T", l.parentNode.insertBefore(i, l)
+        }(window, document, "script", "dataLayer"), $("#offCanvas").on("click", function() {
+            $(".nav-offcanvas").addClass("open"), $(".offcanvas-overlay").addClass("on")
+        }), $("#offCanvasClose, .offcanvas-overlay").on("click", function() {
+            $(".nav-offcanvas").removeClass("open"), $(".offcanvas-overlay").removeClass("on")
+        }), $("body").append('\n    <div class="lightbox">\n      <a href="#lightbox" class="lightbox-close lightbox-toggle"><span>X</span></a>\n      <div class="lightbox-container">\n        <div class="row">\n          <div class="col-sm-12 lightbox-column">\n            \n          </div>\n        </div>\n      </div>\n    </div>\n  '), $(".lightbox-toggle").on("click", function(o) {
+            o.preventDefault(), $(".lightbox").fadeToggle("fast");
+            var n = $(o.currentTarget).attr("data-lightbox-type"),
+                a = $(o.currentTarget).attr("data-lightbox-content");
+            console.log(o), "video" == n ? $(".lightbox-column").append('\n        <div class="lightbox-video">\n        <iframe src="' + a + '" frameborder="0" allowfullscreen &autoplay=1 > </iframe>\n        </div>\n    ') : "image" == n && $(".lightbox-column").append('\n        <img src="' + a + '" class="img-" frameborder="0" allowfullscreen >\n    ')
+        }), $(".lightbox-close").on("click", function(o) {
+            o.preventDefault(), $(".lightbox-column > *").remove()
+        }), $window = $(window), $window.scroll(function() {
+            $scroll_position = $window.scrollTop(), $scroll_position > 100 ? ($(".header").addClass("sticky"), header_height = $(".header").innerHeight(), $("body").css("padding-top", header_height)) : ($("body").css("padding-top", "0"), $(".header").removeClass("sticky"))
+        }), jQuery(function(o) {
+            o(window).on("scroll", function n() {
+                var a = o(window).scrollTop() + o(window).height(),
+                    e = o(".animatable");
+                400 == e.length && o(window).off("scroll", n), e.each(function(n) {
+                    var e = o(this);
+                    e.offset().top + e.height() - 20 < a && e.removeClass("animatable").addClass("animated")
+                })
+            }), o(window).trigger("scroll")
+        });
+    </script>
 </body>
+
 </html>
