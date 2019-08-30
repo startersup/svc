@@ -136,18 +136,18 @@
           <p><span>Order Date :</span> 14/09/2019</p>
          <p><span>Order Id :</span> #908789</p>   
     </div>
-           <div class="col-md-10">
+           <div class="col-md-9">
                        <table class="tickettable" id="tickettable">
                
                 <tbody >
                <tr class="header">
-                    <th style="width:30%;">Item Name</th>
+                    <th>Item Name</th>
                     <th>Rate</th>
                     <th>Quantity</th>
                      <th>Net Amount</th>
                      <th>GST </th>
                       <th>GST Amount</th>
-                      <th>Total Amount</th>
+                      <th>Total</th>
                 </tr>
                       
                 </tbody>
@@ -157,30 +157,22 @@
                    <table>
                    <tr>
                     <td><p>Net Total :</p></td> 
-                       <td> <input type="number" name="price" class="editedcontrol" disabled value="0" id="nettotal" placeholder=""></td>
+                       <td> <input type="number" name="price" class="controls" disabled value="0" id="nettotal" placeholder=""></td>
                     </tr>
-                       <tr>
-                       <td><p>GST Total :</p></td>
-                           <td><input type="number" name="price" class="editedcontrol" disabled value="0" id="gsttotal" placeholder=""></td>
-                       </tr>
-                       <tr>
-                       <td><p>Grand Total :</p></td>
-                           <td> <input type="number" name="price" class="editedcontrol" disabled value="0" id="grandtotal" placeholder=""></td>
-                       </tr>
                    </table>
                   
                </div>
            </div>
-           <div class="col-md-2 addcontrol">
+           <div class="col-md-3 addcontrol">
                <label>Add Items</label>
                <input type="text" name="item" class="controls" placeholder="Enter Item Name" id="item">
 <input type="number" name="quantity" class="controls" id="rate" placeholder="Enter Net Rate"><br />
 <input type="number" name="price" class="controls" id="quantity" placeholder="Enter Item quantity">
  <input type="number" name="price" class="controls" id="gst" placeholder="Enter GST Percentage">
                
+               <input type="number" name="price" class="controls" value="0" id="grandtotal" placeholder="">
               
-              
-               
+               <input type="number" name="price" class="controls" value="0" id="gsttotal" placeholder="">
                
 <input type="button" value="Add Product +" class="addbutton" onclick="addRow()" id="add">
            </div>
@@ -259,9 +251,9 @@ var rowcount = document.getElementById("tickettable").rows.length;
                                  
     td5.innerHTML = '<input onchange="updaterow('+rowcount+');" class="editcontrol" type="text" name="'+rowcount+'gstid'+'" id="'+rowcount+'gstid'+'" value="'+x4+'" >';
                                  
-    td6.innerHTML = '<input  class="editcontrol" disabled type="text" id="'+rowcount+'gstamountid'+'" name="'+rowcount+'gstamount'+'" value="'+parseFloat(((netamount/100)*x4).toFixed(2))+'"  >';
+    td6.innerHTML = '<input  class="editcontrol" disabled type="text" id="'+rowcount+'gstamountid'+'" name="'+rowcount+'gstamount'+'" value="'+((netamount/100)*x4)+'"  >';
                                  
-    td7.innerHTML='<input  class="editcontrol" disabled type="text" id="'+rowcount+'totalamountid'+'" name="'+rowcount+'totalamountid'+'" value="'+parseFloat((netamount+((netamount/100)*x4)).toFixed(2))+'"  >';
+    td7.innerHTML='<input  class="editcontrol" disabled type="text" id="'+rowcount+'totalamountid'+'" name="'+rowcount+'totalamountid'+'" value="'+(netamount+((netamount/100)*x4))+'"  >';
     
 
     row.appendChild(td1);
@@ -284,16 +276,16 @@ document.getElementById("quantity").value="";
 document.getElementById("gst").value="";
                                  
                                  var tot = document.getElementById("grandtotal").value;
-                                 tot=parseFloat(tot)+parseFloat (netamount)+parseFloat ((netamount/100)*x4);
-                                 document.getElementById("grandtotal").value=parseFloat(tot.toFixed(2));
+                                 tot=parseInt(tot)+parseInt (netamount)+parseInt ((netamount/100)*x4);
+                                 document.getElementById("grandtotal").value=tot;
                                  
                                  tot = document.getElementById("nettotal").value;
-                                 tot=parseFloat(tot)+parseFloat (netamount);
-                                 document.getElementById("nettotal").value=parseFloat(tot.toFixed(2));
+                                 tot=parseInt(tot)+parseInt (netamount);
+                                 document.getElementById("nettotal").value=tot;
                                  
                                   tot = document.getElementById("gsttotal").value;
-                                 tot=parseFloat(tot)+parseFloat (((netamount/100)*x4));
-                                 document.getElementById("gsttotal").value=parseFloat(tot.toFixed(2));
+                                 tot=parseInt(tot)+parseInt (((netamount/100)*x4));
+                                 document.getElementById("gsttotal").value=tot;
                                  
                                 
                                  
@@ -318,12 +310,12 @@ document.getElementById("gst").value="";
           //   console.log("diff => "+diffval);
              
                 tot = document.getElementById("nettotal").value;
-                tot=parseFloat(tot)-parseFloat (document.getElementById(rowcount+"netamountid").value);
-                document.getElementById("nettotal").value=parseFloat(tot.toFixed(2)) + parseFloat(x1*x2);
+                tot=parseInt(tot)-parseInt (document.getElementById(rowcount+"netamountid").value);
+                document.getElementById("nettotal").value=parseInt(tot) + parseInt(x1*x2);
 
                 tot = document.getElementById("gsttotal").value;
-                tot=parseFloat(tot)- parseFloat (document.getElementById(rowcount+"gstamountid").value);
-                document.getElementById("gsttotal").value=tparseFloat(tot.toFixed(2))+ parseFloat ((x1*x2)+(((x1*x2)/100)*x3));
+                tot=parseInt(tot)- parseInt (document.getElementById(rowcount+"gstamountid").value);
+                document.getElementById("gsttotal").value=tparseInt(tot)+ parseInt ((x1*x2)+(((x1*x2)/100)*x3));
              
              
              document.getElementById("grandtotal").value=x5;

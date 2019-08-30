@@ -127,8 +127,8 @@ ul#pro li a:hover{
 }
 .container3
 {
-    margin-left:3%;
-    margin-right:5%;
+    margin-left:0%;
+    margin-right:2.5%;
 }
 .dropdown {
   position: relative;
@@ -296,6 +296,18 @@ ul.nav li.dropdown:hover > ul.dropdown-menu {
   display: inline-block;
   font-size: 17px;
     font-weight:700;
+}
+.addbutton {
+  background-color:#00c97d; 
+  border: none;
+   margin-top:8px;
+  color: white;
+  padding: 5px 10px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 15px;
+    font-weight:400;
 }
 .featurebutton {
   background-color:#ffffff; 
@@ -727,6 +739,29 @@ input[type=checkbox]
     outline: none;
     font-family: 'Nunito', sans-serif;
 }
+.editcontrol
+{
+     margin-top: 10px;
+    border: none !important;
+    background-color:transparent;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    height: 10px !important;
+    outline: none;
+    font-family: 'Nunito', sans-serif;
+}
+.editedcontrol
+{
+    width:80% !important;
+     margin-top: 10px;
+    border: none !important;
+    background-color:transparent;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    height: 10px !important;
+    outline: none;
+    font-family: 'Nunito', sans-serif;
+}
 .selectit {
     width: 80%;
     min-height: 45px;
@@ -951,11 +986,55 @@ table {
     max-width:1200px;
     width:100% !important;
 }
+.tickettable td
+{
+    border:1px solid #f4f4f4;
+}
 .table
 {
     background-color:#ffffff !important;
           max-width:1200px;
        width:100% !important;
+}
+#tickettable
+{
+     border-collapse: collapse;
+     width: 100%;
+      margin-top:40px;
+     font-family: 'Nunito', sans-serif;
+    font-size:14px;
+     letter-spacing: 0.2px;
+}
+.purchaseright
+{
+    float:right;
+    margin-top:20px;
+    margin-left:50px;
+}
+#tickettable td
+{
+    padding:2px 10px;
+    text-align: left;
+    letter-spacing:0.5px;
+     color:#000;
+     line-height:22px;
+    border:1px solid #f4f4f4;
+    font-size:13px;
+    font-weight:500;
+ font-family: 'Nunito', sans-serif; 
+}
+#tickettable th
+{
+    background-color:#ebeef0 !important;
+    padding:8px 10px;
+    text-align: left;
+    letter-spacing:0.5px;
+     color:#000;
+     line-height:22px;
+    border:1px solid #f4f4f4;
+    font-size:14px;
+    font-weight:700;
+ font-family: 'Nunito', sans-serif; 
 }
   #myTable {
     border-collapse: collapse;
@@ -1010,6 +1089,53 @@ padding-top:30px;
     font-weight:500;
  font-family: 'Nunito', sans-serif;
   }
+.addcontrol input[type=text]  {
+    width: 100%;
+    padding: 5px 20px;
+    min-height: 20px;
+    margin: 8px 0;
+    color: #000000;
+    border: 1px solid #DBDFE3;
+    box-sizing: border-box;
+    background-color: #e4e4e4;
+    font-family: 'Nunito', sans-serif;
+}
+.addcontrol input[type=number]
+{
+    width: 100%;
+    padding: 5px 20px;
+    min-height: 20px;
+    margin: 8px 0;
+    color: #000000;
+    border: 1px solid #DBDFE3;
+    box-sizing: border-box;
+    background-color: #e4e4e4;
+    font-family: 'Nunito', sans-serif; 
+}
+.totaltable input[type=number]
+{
+ width: 100%;
+    padding: 5px 20px;
+    min-height: 20px;
+    margin: 8px 0;
+    color: #000000;
+    border: 1px solid #DBDFE3;
+    box-sizing: border-box;
+    background-color: #ffffff;
+    font-family: 'Nunito', sans-serif;
+}    
+
+#tickettable input[type=text], input[type=email], input[type=password], input[type=number] {
+    width: 100%;
+    padding: 5px 20px;
+    min-height: 20px;
+    margin: 8px 0;
+    color: #000000;
+    border: 1px solid #DBDFE3;
+    box-sizing: border-box;
+    background-color: #ffffff;
+    font-family: 'Nunito', sans-serif;
+}
   
 .hidetext { -webkit-text-security: none; }
 .hidetext { -webkit-text-security: circle; }
